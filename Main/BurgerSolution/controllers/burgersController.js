@@ -5,29 +5,36 @@ var router = express.Router();
 // Import the model (cat.js) to use its database functions.
 var burgers = require("../models/burger.js");
 
+// get route => index
+router.get("/", function(req, res){
+  res.redirect("/burgers");
+});
+
 // Create all our routes and set up logic within those routes where required.
-router.get("/", function(req, res) {
+router.get("/burgers", function(req, res) {
   burgers.all(function(data) {
-    var hbsObject = {
-      burgers: data
-    };
-    console.log(hbsObject);
-    res.render("index", hbsObject);
+    
+    console.log(data);
+    res.render("index", { burger_data: data });
   });
 });
 
-router.post("/api/burger", function(req, res) {
+
+router.post("/burgers/create", function(req, res) {
   burgers.create([
-    "burger_name", "devoured"
+    "burger_name"
   ], [
-    req.body.burger_name, req.body.devoured
+    req.body.burger_name
   ], function(result) {
-    // Send back the ID of the new quote
-    res.json({ id: result.insertId });
+    // wrapper for orm.js that using MySQL insert callback will return a log to console,
+    // render back to index with handle
+    console.log(result);
+    res.redirect("/");
+
   });
 });
 
-router.put("/api/burger/:id", function(req, res) {
+router.put("/burgers/:id", function(req, res) {
   var condition = "id = " + req.params.id;
 
   console.log("condition", condition);
